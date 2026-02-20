@@ -29,6 +29,30 @@
             color: var(--text-primary);
             overflow-x: hidden;
         }
+
+        /* スクロールバー - Chrome/Edge/Safari */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(5, 8, 16, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1a1f3a;
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2a3050;
+        }
+
+        /* スクロールバー - Firefox */
+        * {
+            scrollbar-color: #1a1f3a rgba(5, 8, 16, 0.5);
+            scrollbar-width: thin;
+        }
         
         header {
             display: flex;
@@ -161,6 +185,23 @@
             max-height: 80vh;
             overflow-y: auto;
         }
+
+        .modal-window::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-window::-webkit-scrollbar-track {
+            background: rgba(5, 8, 16, 0.5);
+        }
+
+        .modal-window::-webkit-scrollbar-thumb {
+            background: #2a3050;
+            border-radius: 4px;
+        }
+
+        .modal-window::-webkit-scrollbar-thumb:hover {
+            background: #3a4060;
+        }
         
         .modal-header {
             padding: 20px;
@@ -283,6 +324,23 @@
             overflow-x: hidden;
             scroll-behavior: smooth;
             position: relative;
+        }
+
+        .v-container::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        .v-container::-webkit-scrollbar-track {
+            background: rgba(5, 8, 16, 0.5);
+        }
+
+        .v-container::-webkit-scrollbar-thumb {
+            background: #1a1f3a;
+            border-radius: 6px;
+        }
+
+        .v-container::-webkit-scrollbar-thumb:hover {
+            background: #2a3050;
         }
         
         .v-grid {
