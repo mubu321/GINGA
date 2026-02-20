@@ -80,173 +80,6 @@
             color: var(--cyan-light);
         }
         
-        .u-icon-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-            cursor: pointer;
-            border: 2px solid var(--cyan);
-            transition: all 0.3s ease;
-        }
-        
-        .u-icon-btn:hover {
-            border-color: var(--cyan-light);
-            box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
-        }
-        
-        .login-btn {
-            background: linear-gradient(135deg, var(--cyan) 0%, var(--cyan-light) 100%);
-            color: var(--bg-dark);
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 700;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
-        }
-        
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.4);
-        }
-        
-        /* モーダル */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        .modal-window {
-            background: var(--bg-card);
-            padding: 30px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 400px;
-            border: 1px solid var(--border);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            position: relative;
-        }
-        
-        .logout-link {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 12px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            text-decoration: underline;
-            background: none;
-            border: none;
-            padding: 0;
-            transition: color 0.3s ease;
-        }
-        
-        .logout-link:hover {
-            color: #ff6b6b;
-        }
-        
-        .modal-window h2 {
-            margin: 0 0 20px;
-            font-size: 20px;
-            color: var(--cyan-light);
-        }
-        
-        .input-box {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 12px;
-            border: 1px solid var(--border);
-            background: rgba(0, 217, 255, 0.05);
-            border-radius: 6px;
-            color: var(--text-primary);
-            font-size: 13px;
-            transition: all 0.3s ease;
-        }
-        
-        .input-box:focus {
-            outline: none;
-            border-color: var(--cyan);
-            box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
-        }
-        
-        .file-label {
-            display: block;
-            background: rgba(0, 217, 255, 0.15);
-            color: var(--cyan);
-            padding: 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-bottom: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            border: 1px solid var(--border);
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-        
-        .file-label:hover {
-            background: rgba(0, 217, 255, 0.25);
-            border-color: var(--cyan);
-        }
-        
-        #editIcon { display: none; }
-        
-        .warn-text {
-            color: #ff9999;
-            font-size: 11px;
-            margin-bottom: 12px;
-            font-weight: 500;
-            line-height: 1.4;
-        }
-        
-        .btn-save {
-            background: linear-gradient(135deg, var(--cyan) 0%, var(--cyan-light) 100%);
-            color: var(--bg-dark);
-            border: none;
-            padding: 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            font-weight: 700;
-            font-size: 13px;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-save:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.4);
-        }
-        
-        .btn-close {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            margin-top: 12px;
-            font-size: 12px;
-            text-decoration: underline;
-            transition: color 0.3s ease;
-            width: 100%;
-        }
-        
-        .btn-close:hover {
-            color: var(--text-primary);
-        }
-        
         /* 動画グリッド */
         .v-grid {
             display: grid;
@@ -308,6 +141,31 @@
             margin-top: 5px;
         }
         
+        /* ローディング */
+        #loadingIndicator {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            display: none;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-top: 2px solid var(--cyan);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
         @media (max-width: 1024px) {
             .v-grid {
                 grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -335,10 +193,6 @@
                 gap: 10px;
                 padding: 12px;
             }
-            
-            .modal-window {
-                padding: 20px;
-            }
         }
         
         @media (max-width: 480px) {
@@ -356,16 +210,8 @@
             }
             
             .nav-link {
-                display: none;
-            }
-            
-            .header-right {
-                gap: 10px;
-            }
-            
-            .u-icon-btn {
-                width: 32px;
-                height: 32px;
+                font-size: 11px;
+                padding: 6px 8px;
             }
             
             .v-grid {
@@ -382,11 +228,6 @@
             .v-stats {
                 font-size: 10px;
             }
-            
-            .modal-window {
-                max-width: 90%;
-                padding: 20px;
-            }
         }
     </style>
 </head>
@@ -396,29 +237,18 @@
     <a href="index.html" class="logo">GINGA</a>
     <div class="header-right">
         <a href="upload.html" class="nav-link">+ 投稿</a>
-        <div id="userArea"></div>
     </div>
 </header>
 
-<div id="profileModal" class="modal-overlay">
-    <div class="modal-window">
-        <button class="logout-link" id="doLogout">ログアウト</button>
-        <h2>プロフィール編集</h2>
-        <input type="text" id="editName" class="input-box" placeholder="ユーザー名">
-        <label for="editIcon" class="file-label">🖼️ プロフィール画像を選択</label>
-        <input type="file" id="editIcon" accept="image/*">
-        <p class="warn-text">※ なるべく小さいサイズの画像をお選びください（1MB以下推奨）</p>
-        <button class="btn-save" id="saveProfile">変更を保存</button>
-        <button class="btn-close" id="closeModal">キャンセル</button>
-    </div>
-</div>
-
 <div class="v-grid" id="grid"></div>
+<div id="loadingIndicator">
+    <div class="spinner"></div>
+    <span>読み込み中...</span>
+</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, query, onSnapshot, orderBy, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, query, orderBy, startAfter, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAZivYKOGc1tSUAIDq_c10C1wJ-Pdh0U2o",
@@ -431,92 +261,87 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const auth = getAuth(app);
 
-    let currentUser = null;
+    let lastVisible = null;
+    let isLoading = false;
+    let hasMore = true;
+    const BATCH_SIZE = 12;
 
-    onAuthStateChanged(auth, async user => {
-        currentUser = user;
-        const userArea = document.getElementById('userArea');
-        if (user) {
-            const uSnap = await getDoc(doc(db, "users", user.uid));
-            const ud = uSnap.data();
-            userArea.innerHTML = `<img src="${ud?.icon || ''}" class="u-icon-btn" id="openModalBtn" title="プロフィール">`;
-            document.getElementById('openModalBtn').onclick = () => {
-                document.getElementById('editName').value = ud?.name || "";
-                document.getElementById('profileModal').style.display = 'flex';
-            };
-        } else {
-            userArea.innerHTML = `<a href="login.html" class="login-btn">ログイン</a>`;
+    // 初回読み込み
+    loadMoreVideos();
+
+    // 無限スクロール検出
+    window.addEventListener('scroll', () => {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+            if (!isLoading && hasMore) {
+                loadMoreVideos();
+            }
         }
     });
 
-    document.getElementById('doLogout').onclick = () => {
-        if (confirm("ログアウトしてもよろしいですか？")) {
-            signOut(auth).then(() => location.reload());
+    async function loadMoreVideos() {
+        if (isLoading) return;
+        isLoading = true;
+        document.getElementById('loadingIndicator').style.display = 'block';
+
+        try {
+            let q;
+            if (lastVisible === null) {
+                q = query(collection(db, "videos"), orderBy("createdAt", "desc"), limit(BATCH_SIZE + 1));
+            } else {
+                q = query(collection(db, "videos"), orderBy("createdAt", "desc"), startAfter(lastVisible), limit(BATCH_SIZE + 1));
+            }
+
+            const snap = await getDocs(q);
+            const videos = [];
+
+            snap.forEach(doc => {
+                videos.push({ docId: doc.id, ...doc.data() });
+            });
+
+            videos.sort(() => Math.random() - 0.5);
+
+            if (videos.length > BATCH_SIZE) {
+                lastVisible = snap.docs[snap.docs.length - 2];
+                videos.pop();
+            } else {
+                hasMore = false;
+            }
+
+            if (videos.length === 0) {
+                hasMore = false;
+            } else {
+                const grid = document.getElementById('grid');
+                videos.forEach(v => {
+                    const tid = `thumb-${v.docId}`;
+                    grid.innerHTML += `
+                        <a href="watch.html?id=${v.docId}" class="v-card">
+                            <div class="thumb-container">
+                                <img src="" id="${tid}" class="thumb">
+                            </div>
+                            <div class="v-title">${v.title}</div>
+                            <div class="v-stats">${(v.views || 0).toLocaleString()}回視聴</div>
+                        </a>
+                    `;
+                    setTimeout(() => {
+                        const img = document.getElementById(tid);
+                        if (v.thumbnail) {
+                            img.src = v.thumbnail;
+                            img.classList.add('loaded');
+                        } else {
+                            generateThumb(v.url, img);
+                        }
+                    }, 100);
+                });
+            }
+        } catch (error) {
+            console.error("Error loading videos:", error);
+            hasMore = false;
+        } finally {
+            isLoading = false;
+            document.getElementById('loadingIndicator').style.display = 'none';
         }
-    };
-
-    document.getElementById('closeModal').onclick = () => {
-        document.getElementById('profileModal').style.display = 'none';
-    };
-
-    document.getElementById('saveProfile').onclick = async () => {
-        if (!currentUser) return;
-        const btn = document.getElementById('saveProfile');
-        btn.innerText = "保存中...";
-        btn.disabled = true;
-        const newName = document.getElementById('editName').value;
-        const fileInput = document.getElementById('editIcon');
-        const updates = { name: newName };
-
-        if (fileInput.files[0]) {
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                updates.icon = e.target.result;
-                await updateDoc(doc(db, "users", currentUser.uid), updates);
-                location.reload();
-            };
-            reader.readAsDataURL(fileInput.files[0]);
-        } else {
-            await updateDoc(doc(db, "users", currentUser.uid), updates);
-            location.reload();
-        }
-    };
-
-    onSnapshot(query(collection(db, "videos"), orderBy("createdAt", "desc")), snap => {
-        const videos = [];
-        snap.forEach(vDoc => {
-            videos.push({ docId: vDoc.id, ...vDoc.data() });
-        });
-        
-        // ランダムにシャッフル
-        videos.sort(() => Math.random() - 0.5);
-        
-        const grid = document.getElementById('grid');
-        grid.innerHTML = "";
-        videos.forEach(v => {
-            const tid = `thumb-${v.docId}`;
-            grid.innerHTML += `
-                <a href="watch.html?id=${v.docId}" class="v-card">
-                    <div class="thumb-container">
-                        <img src="" id="${tid}" class="thumb">
-                    </div>
-                    <div class="v-title">${v.title}</div>
-                    <div class="v-stats">${(v.views || 0).toLocaleString()}回視聴</div>
-                </a>
-            `;
-            setTimeout(() => {
-                const img = document.getElementById(tid);
-                if (v.thumbnail) {
-                    img.src = v.thumbnail;
-                    img.classList.add('loaded');
-                } else {
-                    generateThumb(v.url, img);
-                }
-            }, 100);
-        });
-    });
+    }
 
     function generateThumb(url, imgElement) {
         const v = document.createElement('video');

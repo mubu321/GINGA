@@ -101,36 +101,6 @@
             flex-wrap: wrap;
         }
         
-        .author-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-            min-width: 0;
-        }
-        
-        .author-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: rgba(0, 217, 255, 0.1);
-            border: 2px solid var(--cyan);
-            flex-shrink: 0;
-        }
-        
-        .author-text strong {
-            display: block;
-            color: var(--text-primary);
-            font-size: 13px;
-            margin-bottom: 2px;
-        }
-        
-        .author-text small {
-            color: var(--text-secondary);
-            font-size: 11px;
-        }
-        
         .btn {
             padding: 7px 14px;
             border-radius: 6px;
@@ -154,24 +124,6 @@
             background: var(--cyan);
             color: var(--bg-dark);
             border-color: var(--cyan);
-        }
-        
-        .btn-follow {
-            background: linear-gradient(135deg, var(--cyan) 0%, var(--cyan-light) 100%);
-            color: var(--bg-dark);
-            border: none;
-            padding: 8px 16px;
-        }
-        
-        .btn-follow:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.3);
-        }
-        
-        .btn-follow.active {
-            background: rgba(0, 217, 255, 0.1);
-            color: var(--cyan);
-            border: 1px solid var(--border);
         }
         
         .btn-group {
@@ -397,22 +349,9 @@
                 margin: 12px 0 8px;
             }
             
-            .action-bar {
-                gap: 8px;
-                padding: 10px 0;
-            }
-            
-            .author-icon {
-                width: 40px;
-                height: 40px;
-            }
-            
-            .author-text strong {
-                font-size: 12px;
-            }
-            
-            .author-text small {
-                font-size: 10px;
+            .stat-row {
+                font-size: 11px;
+                margin-bottom: 10px;
             }
             
             .btn {
@@ -467,31 +406,9 @@
                 padding: 8px 0;
             }
             
-            .author-info {
-                width: 100%;
-                margin-bottom: 8px;
-            }
-            
-            .author-icon {
-                width: 36px;
-                height: 36px;
-            }
-            
-            .author-text strong {
-                font-size: 11px;
-            }
-            
-            .author-text small {
-                font-size: 10px;
-            }
-            
             .btn {
                 padding: 5px 10px;
                 font-size: 10px;
-            }
-            
-            .btn-follow {
-                padding: 7px 12px;
             }
             
             .btn-group {
@@ -547,14 +464,6 @@
             再生回数 <span id="viewNum" class="edit-num">0</span>回
         </div>
         <div class="action-bar">
-            <div class="author-info">
-                <img id="authorIcon" class="author-icon">
-                <div class="author-text">
-                    <strong id="authorName">読み込み中...</strong>
-                    <small>フォロワー <span id="followNum" class="edit-num">0</span>人</small>
-                </div>
-                <button class="btn btn-follow" id="followBtn">フォロー</button>
-            </div>
             <div class="btn-group">
                 <button class="btn" id="likeBtn">👍 <span id="likeNum" class="edit-num">0</span></button>
                 <button id="adminDelBtn" class="btn admin-del">削除</button>
@@ -576,7 +485,6 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, doc, getDoc, getDocs, collection, query, limit, updateDoc, increment, addDoc, serverTimestamp, onSnapshot, deleteDoc, setDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAZivYKOGc1tSUAIDq_c10C1wJ-Pdh0U2o",
@@ -589,18 +497,8 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const auth = getAuth(app);
     const vid = new URLSearchParams(window.location.search).get("id");
     const ADMIN_UID = "tP5CqCTRO3f2QQ8jdoj0ftY8kZU2";
-    let currentUser = null;
-
-    onAuthStateChanged(auth, user => {
-        currentUser = user;
-        if (user && vid) {
-            if (user.uid === ADMIN_UID) setupAdmin();
-            checkStates();
-        }
-    });
 
     if (vid) load();
 
@@ -613,38 +511,18 @@
         document.getElementById('viewNum').innerText = (v.views || 0).toLocaleString();
         document.getElementById('likeNum').innerText = (v.likes || 0).toLocaleString();
 
-        const uSnap = await getDoc(doc(db, "users", v.userId));
-        if (uSnap.exists()) {
-            const ud = uSnap.data();
-            document.getElementById('authorName').innerText = ud.name;
-            document.getElementById('authorIcon').src = ud.icon || "";
-            document.getElementById('followNum').innerText = (ud.followers || 0).toLocaleString();
-        }
-
         document.getElementById('likeBtn').onclick = async () => {
-            if (!currentUser) return alert("ログインしてください");
             const btn = document.getElementById('likeBtn');
-            const ref = doc(db, "videos", vid, "likedUsers", currentUser.uid);
-            const isLiked = btn.classList.contains('active');
+            const anonymousId = getAnonymousId();
+            const ref = doc(db, "videos", vid, "likedUsers", anonymousId);
+            const likeSnap = await getDoc(ref);
+            const isLiked = likeSnap.exists();
+            
             await (isLiked ? deleteDoc(ref) : setDoc(ref, { u: 1 }));
             await updateDoc(vRef, { likes: increment(isLiked ? -1 : 1) });
             btn.classList.toggle('active');
             const fresh = await getDoc(vRef);
             document.getElementById('likeNum').innerText = (fresh.data().likes || 0).toLocaleString();
-        };
-
-        document.getElementById('followBtn').onclick = async () => {
-            if (!currentUser) return alert("ログインしてください");
-            const btn = document.getElementById('followBtn');
-            const uRef = doc(db, "users", v.userId);
-            const ref = doc(uRef, "followerList", currentUser.uid);
-            const isFollowing = btn.classList.contains('active');
-            await (isFollowing ? deleteDoc(ref) : setDoc(ref, { u: 1 }));
-            await updateDoc(uRef, { followers: increment(isFollowing ? -1 : 1) });
-            btn.classList.toggle('active');
-            btn.innerText = isFollowing ? "フォロー" : "✓ フォロー中";
-            const fresh = await getDoc(uRef);
-            document.getElementById('followNum').innerText = (fresh.data().followers || 0).toLocaleString();
         };
 
         const cCol = collection(db, "videos", vid, "comments");
@@ -682,12 +560,12 @@
                 });
 
                 document.getElementById(`input-${cid}`).onkeypress = async (e) => {
-                    if (e.key === 'Enter' && currentUser && e.target.value.trim()) {
-                        const mySnap = await getDoc(doc(db, "users", currentUser.uid));
+                    if (e.key === 'Enter' && e.target.value.trim()) {
+                        const anonymousId = getAnonymousId();
                         await addDoc(collection(db, "videos", vid, "comments", cid, "replies"), {
                             text: e.target.value,
-                            userName: mySnap.data()?.name || "匿名",
-                            userId: currentUser.uid,
+                            userName: "ゲスト",
+                            userId: anonymousId,
                             createdAt: serverTimestamp()
                         });
                         e.target.value = "";
@@ -698,12 +576,12 @@
         });
 
         document.getElementById('commentInput').onkeypress = async (e) => {
-            if (e.key === 'Enter' && currentUser && e.target.value.trim()) {
-                const mySnap = await getDoc(doc(db, "users", currentUser.uid));
+            if (e.key === 'Enter' && e.target.value.trim()) {
+                const anonymousId = getAnonymousId();
                 await addDoc(cCol, {
                     text: e.target.value,
-                    userName: mySnap.data()?.name || "匿名",
-                    userId: currentUser.uid,
+                    userName: "ゲスト",
+                    userId: anonymousId,
                     createdAt: serverTimestamp()
                 });
                 e.target.value = "";
@@ -721,7 +599,6 @@
             }
         });
         
-        // ランダムにシャッフル
         videos.sort(() => Math.random() - 0.5);
         
         const relatedList = document.getElementById('relatedList');
@@ -746,15 +623,13 @@
         area.style.display = area.style.display === "block" ? "none" : "block";
     };
 
-    async function checkStates() {
-        const l = await getDoc(doc(db, "videos", vid, "likedUsers", currentUser.uid));
-        if (l.exists()) document.getElementById('likeBtn').classList.add('active');
-        const v = await getDoc(doc(db, "videos", vid));
-        const f = await getDoc(doc(db, "users", v.data().userId, "followerList", currentUser.uid));
-        if (f.exists()) {
-            document.getElementById('followBtn').classList.add('active');
-            document.getElementById('followBtn').innerText = "✓ フォロー中";
+    function getAnonymousId() {
+        let id = localStorage.getItem('gingaAnonymousId');
+        if (!id) {
+            id = 'anon_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('gingaAnonymousId', id);
         }
+        return id;
     }
 
     function setupAdmin() {
@@ -764,13 +639,8 @@
                 e.stopPropagation();
                 const val = prompt("数値を変更:", el.innerText.replace(/,/g, ''));
                 if (val !== null && !isNaN(val)) {
-                    let ref = doc(db, "videos", vid);
-                    let key = el.id === "viewNum" ? "views" : "likes";
-                    if (el.id === "followNum") {
-                        const v = await getDoc(doc(db, "videos", vid));
-                        ref = doc(db, "users", v.data().userId);
-                        key = "followers";
-                    }
+                    const ref = doc(db, "videos", vid);
+                    const key = el.id === "viewNum" ? "views" : "likes";
                     await updateDoc(ref, { [key]: parseInt(val) });
                     el.innerText = parseInt(val).toLocaleString();
                 }
@@ -782,6 +652,12 @@
                 location.href = "index.html";
             }
         };
+    }
+
+    // 管理者ユーザーをチェック（ローカルストレージで管理可能）
+    const adminKey = localStorage.getItem('gingaAdminKey');
+    if (adminKey === 'admin_secret_key') {
+        setupAdmin();
     }
 </script>
 </body>
