@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動画投稿 - iroTube</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 20px; background: #fff; }
+        .header-logo { font-size: 24px; font-weight: bold; text-decoration: none; display: flex; align-items: center; margin-bottom: 30px; }
+        .iro { color: #007bff; }
+        .tube { color: #000; background: #ffcc00; padding: 2px 6px; border-radius: 4px; margin-left: 2px; }
+        
+        .upload-card { max-width: 500px; margin: 0 auto; border: 1px solid #eee; padding: 20px; border-radius: 12px; }
+        input, button { width: 100%; padding: 10px; margin-top: 10px; box-sizing: border-box; }
+        button { background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* 進捗バーのスタイル */
+        #progressContainer { display: none; margin-top: 20px; text-align: center; }
+        .progress-bg { background: #eee; border-radius: 10px; height: 10px; width: 100%; overflow: hidden; margin-top: 5px; }
+        .progress-bar { background: #007bff; height: 100%; width: 0%; transition: width 0.2s; }
+        #statusText { font-size: 14px; color: #666; }
+    </style>
+</head>
+<body>
+
+<a href="index.html" class="header-logo">
+    <span class="iro">iro</span><span class="tube">Tube</span>
+</a>
+
+<div class="upload-card">
+    <h2>動画をアップロード</h2>
+    <input type="text" id="title" placeholder="動画のタイトル">
+    <label style="display:block; margin-top:15px; font-size:14px;">動画ファイルを選択:</label>
+    <input type="file" id="videoFile" accept="video/*">
+    
+    <button id="uploadBtn">投稿する</button>
+
+    <div id="progressContainer">
+        <div id="statusText">準備中... 0%</div>
+        <div class="progress-bg">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    // Cloudinary 設定
+    const CLOUD_NAME = "du5blunb0";
+    const UPLOAD_PRESET = "mytube_preset";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAZivYKOGc1tSUAIDq_c10C1wJ-Pdh0U2o",
+        authDomain: "mytube-f4544.firebaseapp.com",
+        projectId: "mytube-f4544",
+        storageBucket: "mytube-f4544.firebasestorage.app",
+        messagingSenderId: "655444283107",
+        appId: "1:655444283107:web:04f9173faf2d951790ffd6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    let currentUser = null;
+    onAuthStateChanged(auth, user => {
+        currentUser = user;
+        if (!user) { alert("ログインが必要です"); location.href = "login.html"; }
+    });
+
+    document.getElementById('uploadBtn').onclick = async () => {
+        const title = document.getElementById('title').value;
+        const file = document.getElementById('videoFile').files[0];
+        
+        if (!title || !file) return alert("タイトルと動画を選択してください");
+        if (!currentUser) return alert("ログインが確認できません");
+
+        const btn = document.getElementById('uploadBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const statusText = document.getElementById('statusText');
+
+        btn.disabled = true;
+        progressContainer.style.display = 'block';
+
+        // Cloudinaryへのアップロード
+        const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`;
+        const xhr = new XMLHttpRequest();
+        const formData = new FormData();
+
+        formData.append('file', file);
+        formData.append('upload_preset', UPLOAD_PRESET);
+
+        xhr.open('POST', url, true);
+
+        // アップロード進捗の監視
+        xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+                const progress = Math.round((e.loaded / e.total) * 100);
+                progressBar.style.width = progress + '%';
+                statusText.innerText = `アップロード中... ${progress}%`;
+            }
+        };
+
+        xhr.onload = async () => {
+            if (xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                const videoUrl = response.secure_url;
+                // Cloudinaryの機能で動画の拡張子をjpgに変えるだけでサムネイルになります
+                const thumbUrl = videoUrl.substring(0, videoUrl.lastIndexOf(".")) + ".jpg";
+
+                // Firestoreに動画情報を書き込み
+                try {
+                    await addDoc(collection(db, "videos"), {
+                        title: title,
+                        url: videoUrl,
+                        thumbnail: thumbUrl,
+                        userId: currentUser.uid,
+                        views: 0,
+                        createdAt: serverTimestamp()
+                    });
+                    alert("投稿が完了しました！");
+                    location.href = "index.html";
+                } catch (e) {
+                    console.error(e);
+                    alert("Firestoreへの保存に失敗しました");
+                    btn.disabled = false;
+                }
+            } else {
+                const err = JSON.parse(xhr.responseText);
+                console.error(err);
+                alert("Cloudinaryへのアップロードに失敗しました: " + (err.error?.message || "不明なエラー"));
+                btn.disabled = false;
+            }
+        };
+
+        xhr.onerror = () => {
+            alert("ネットワークエラーが発生しました");
+            btn.disabled = false;
+        };
+
+        xhr.send(formData);
+    };
+</script>
+</body>
+</html>
