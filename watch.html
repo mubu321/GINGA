@@ -322,6 +322,34 @@
             color: var(--text-secondary);
             margin: 0;
         }
+
+        .playlist-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .playlist-nav-btn {
+            flex: 1;
+            padding: 8px;
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid var(--border);
+            color: var(--cyan);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .playlist-nav-btn:hover {
+            background: rgba(0, 217, 255, 0.2);
+        }
+
+        .playlist-nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
         
         @media (max-width: 1024px) {
             .container {
@@ -449,6 +477,16 @@
             .rec-text p {
                 font-size: 9px;
             }
+
+            .playlist-controls {
+                gap: 6px;
+                margin-top: 8px;
+            }
+
+            .playlist-nav-btn {
+                padding: 6px;
+                font-size: 11px;
+            }
         }
     </style>
 </head>
@@ -468,6 +506,11 @@
                 <button class="btn" id="likeBtn">👍 <span id="likeNum" class="edit-num">0</span></button>
                 <button id="adminDelBtn" class="btn admin-del">削除</button>
             </div>
+        </div>
+
+        <div class="playlist-controls" id="playlistControls" style="display: none;">
+            <button class="playlist-nav-btn" id="prevBtn">⬅ 前へ</button>
+            <button class="playlist-nav-btn" id="nextBtn">次へ ➡</button>
         </div>
 
         <div class="comment-section">
@@ -497,8 +540,48 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const vid = new URLSearchParams(window.location.search).get("id");
+    const params = new URLSearchParams(window.location.search);
+    const vid = params.get("id");
+    const playlistParam = params.get("playlist");
     const ADMIN_UID = "tP5CqCTRO3f2QQ8jdoj0ftY8kZU2";
+    
+    let playlist = [];
+    let currentIndex = -1;
+
+    // プレイリストの初期化
+    if (playlistParam) {
+        try {
+            playlist = JSON.parse(playlistParam);
+            currentIndex = playlist.indexOf(vid);
+            if (currentIndex !== -1) {
+                updatePlaylistUI();
+            }
+        } catch (e) {
+            console.log('Playlist parsing error:', e);
+        }
+    }
+
+    function updatePlaylistUI() {
+        const controls = document.getElementById('playlistControls');
+        controls.style.display = playlist.length > 1 ? 'flex' : 'none';
+        
+        document.getElementById('prevBtn').disabled = currentIndex <= 0;
+        document.getElementById('nextBtn').disabled = currentIndex >= playlist.length - 1;
+    }
+
+    document.getElementById('prevBtn').onclick = () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            window.location.href = `watch.html?id=${playlist[currentIndex]}&playlist=${JSON.stringify(playlist)}`;
+        }
+    };
+
+    document.getElementById('nextBtn').onclick = () => {
+        if (currentIndex < playlist.length - 1) {
+            currentIndex++;
+            window.location.href = `watch.html?id=${playlist[currentIndex]}&playlist=${JSON.stringify(playlist)}`;
+        }
+    };
 
     if (vid) load();
 
@@ -590,7 +673,6 @@
 
         updateDoc(vRef, { views: increment(1) });
 
-        // おすすめ動画の読み込み（ランダムシャッフル）
         const relatedSnap = await getDocs(query(collection(db, "videos"), limit(12)));
         const videos = [];
         relatedSnap.forEach(doc => {
@@ -654,7 +736,6 @@
         };
     }
 
-    // 管理者ユーザーをチェック（ローカルストレージで管理可能）
     const adminKey = localStorage.getItem('gingaAdminKey');
     if (adminKey === 'admin_secret_key') {
         setupAdmin();

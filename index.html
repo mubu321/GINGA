@@ -63,21 +63,210 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            flex: 1;
+            max-width: 400px;
+            margin: 0 20px;
         }
         
-        .nav-link {
-            text-decoration: none;
-            color: var(--text-primary);
-            font-weight: 600;
-            font-size: 13px;
-            padding: 8px 12px;
+        .search-box {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background: rgba(0, 217, 255, 0.05);
+            border: 1px solid var(--border);
             border-radius: 6px;
+            padding: 6px 12px;
             transition: all 0.3s ease;
         }
         
-        .nav-link:hover {
-            background: rgba(0, 217, 255, 0.1);
+        .search-box:focus-within {
+            border-color: var(--cyan);
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+        }
+        
+        .search-box input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 13px;
+            outline: none;
+        }
+        
+        .search-box input::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .search-btn {
+            background: none;
+            border: none;
+            color: var(--cyan);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+        
+        .search-btn:hover {
             color: var(--cyan-light);
+        }
+        
+        .playlist-btn {
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid var(--border);
+            color: var(--cyan);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .playlist-btn:hover {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: var(--cyan);
+        }
+        
+        /* モーダル */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal-window {
+            background: var(--bg-card);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+        }
+        
+        .modal-header h2 {
+            font-size: 18px;
+            color: var(--cyan-light);
+            margin: 0;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 24px;
+            padding: 0;
+            transition: color 0.2s;
+        }
+        
+        .close-btn:hover {
+            color: var(--text-primary);
+        }
+        
+        .modal-content {
+            padding: 20px;
+        }
+        
+        .playlist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 10px;
+            background: rgba(0, 217, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .playlist-item:hover {
+            background: rgba(0, 217, 255, 0.1);
+        }
+        
+        .playlist-item input[type="checkbox"] {
+            cursor: pointer;
+        }
+        
+        .playlist-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .playlist-item-title {
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .playlist-item-views {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        
+        .playlist-actions {
+            display: flex;
+            gap: 8px;
+            padding: 20px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .playlist-btn-action {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .btn-play {
+            background: linear-gradient(135deg, var(--cyan) 0%, var(--cyan-light) 100%);
+            color: var(--bg-dark);
+        }
+        
+        .btn-play:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.4);
+        }
+        
+        .btn-clear {
+            background: rgba(255, 100, 100, 0.15);
+            color: #ff6464;
+        }
+        
+        .btn-clear:hover {
+            background: rgba(255, 100, 100, 0.25);
         }
         
         /* 動画グリッド */
@@ -177,21 +366,33 @@
         @media (max-width: 768px) {
             header {
                 padding: 10px 15px;
+                flex-wrap: wrap;
+                gap: 10px;
             }
             
             .logo {
                 font-size: 20px;
             }
             
-            .nav-link {
-                font-size: 12px;
-                padding: 6px 10px;
+            .header-right {
+                width: 100%;
+                max-width: none;
+                margin: 0;
+                order: 3;
+            }
+            
+            .search-box {
+                margin: 0;
             }
             
             .v-grid {
                 grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
                 gap: 10px;
                 padding: 12px;
+            }
+            
+            .modal-window {
+                max-width: 90%;
             }
         }
         
@@ -204,14 +405,21 @@
                 font-size: 18px;
             }
             
-            .logo::before {
-                font-size: 16px;
-                margin-right: 4px;
+            .header-right {
+                gap: 8px;
             }
             
-            .nav-link {
+            .search-box {
+                padding: 5px 8px;
+            }
+            
+            .search-box input {
+                font-size: 12px;
+            }
+            
+            .playlist-btn {
+                padding: 5px 10px;
                 font-size: 11px;
-                padding: 6px 8px;
             }
             
             .v-grid {
@@ -228,6 +436,19 @@
             .v-stats {
                 font-size: 10px;
             }
+            
+            .modal-window {
+                max-width: 95%;
+                max-height: 70vh;
+            }
+            
+            .modal-header h2 {
+                font-size: 16px;
+            }
+            
+            .modal-content {
+                padding: 15px;
+            }
         }
     </style>
 </head>
@@ -236,9 +457,30 @@
 <header>
     <a href="index.html" class="logo">GINGA</a>
     <div class="header-right">
-        <a href="upload.html" class="nav-link">+ 投稿</a>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="動画を検索...">
+            <button class="search-btn" id="searchBtn">🔍</button>
+        </div>
+        <button class="playlist-btn" id="playlistBtn">📋 再生リスト (<span id="playlistCount">0</span>)</button>
     </div>
 </header>
+
+<!-- 再生リストモーダル -->
+<div id="playlistModal" class="modal-overlay">
+    <div class="modal-window">
+        <div class="modal-header">
+            <h2>再生リスト</h2>
+            <button class="close-btn" id="closePlaylistBtn">✕</button>
+        </div>
+        <div class="modal-content" id="playlistContent">
+            <p style="color: var(--text-secondary); text-align: center;">再生リストが空です</p>
+        </div>
+        <div class="playlist-actions">
+            <button class="playlist-btn-action btn-play" id="playPlaylist">▶ 再生を開始</button>
+            <button class="playlist-btn-action btn-clear" id="clearPlaylist">🗑 クリア</button>
+        </div>
+    </div>
+</div>
 
 <div class="v-grid" id="grid"></div>
 <div id="loadingIndicator">
@@ -248,7 +490,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, query, orderBy, startAfter, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, query, orderBy, startAfter, limit, getDocs, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAZivYKOGc1tSUAIDq_c10C1wJ-Pdh0U2o",
@@ -265,7 +507,97 @@
     let lastVisible = null;
     let isLoading = false;
     let hasMore = true;
+    let isSearching = false;
+    let searchQuery = "";
     const BATCH_SIZE = 12;
+
+    // 再生リスト管理
+    let playlist = JSON.parse(localStorage.getItem('gingaPlaylist')) || [];
+
+    function updatePlaylistUI() {
+        document.getElementById('playlistCount').innerText = playlist.length;
+        const content = document.getElementById('playlistContent');
+        
+        if (playlist.length === 0) {
+            content.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">再生リストが空です</p>';
+        } else {
+            content.innerHTML = playlist.map((video, idx) => `
+                <div class="playlist-item">
+                    <input type="checkbox" class="playlist-checkbox" data-id="${video.docId}" ${video.checked ? 'checked' : ''}>
+                    <div class="playlist-item-info">
+                        <div class="playlist-item-title">${video.title}</div>
+                        <div class="playlist-item-views">${(video.views || 0).toLocaleString()}回視聴</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.querySelectorAll('.playlist-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const videoId = e.target.dataset.id;
+                    const video = playlist.find(v => v.docId === videoId);
+                    if (video) video.checked = e.target.checked;
+                    localStorage.setItem('gingaPlaylist', JSON.stringify(playlist));
+                });
+            });
+        }
+    }
+
+    // 再生リストボタン
+    document.getElementById('playlistBtn').onclick = () => {
+        document.getElementById('playlistModal').style.display = 'flex';
+        updatePlaylistUI();
+    };
+
+    document.getElementById('closePlaylistBtn').onclick = () => {
+        document.getElementById('playlistModal').style.display = 'none';
+    };
+
+    document.getElementById('playlistModal').onclick = (e) => {
+        if (e.target === document.getElementById('playlistModal')) {
+            document.getElementById('playlistModal').style.display = 'none';
+        }
+    };
+
+    document.getElementById('clearPlaylist').onclick = () => {
+        if (confirm('再生リストを削除しますか？')) {
+            playlist = [];
+            localStorage.setItem('gingaPlaylist', JSON.stringify(playlist));
+            updatePlaylistUI();
+        }
+    };
+
+    document.getElementById('playPlaylist').onclick = () => {
+        const checkedVideos = playlist.filter(v => v.checked);
+        if (checkedVideos.length === 0) {
+            alert('再生する動画を選択してください');
+            return;
+        }
+        // 最初の動画を再生
+        window.location.href = `watch.html?id=${checkedVideos[0].docId}&playlist=${JSON.stringify(checkedVideos.map(v => v.docId))}`;
+    };
+
+    // 検索機能
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+
+    function performSearch() {
+        searchQuery = searchInput.value.trim().toLowerCase();
+        isSearching = searchQuery.length > 0;
+        lastVisible = null;
+        hasMore = true;
+        document.getElementById('grid').innerHTML = '';
+        
+        if (isSearching) {
+            loadSearchResults();
+        } else {
+            loadMoreVideos();
+        }
+    }
+
+    searchBtn.onclick = performSearch;
+    searchInput.onkeypress = (e) => {
+        if (e.key === 'Enter') performSearch();
+    };
 
     // 初回読み込み
     loadMoreVideos();
@@ -274,7 +606,11 @@
     window.addEventListener('scroll', () => {
         if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
             if (!isLoading && hasMore) {
-                loadMoreVideos();
+                if (isSearching) {
+                    loadSearchResults();
+                } else {
+                    loadMoreVideos();
+                }
             }
         }
     });
@@ -311,28 +647,7 @@
             if (videos.length === 0) {
                 hasMore = false;
             } else {
-                const grid = document.getElementById('grid');
-                videos.forEach(v => {
-                    const tid = `thumb-${v.docId}`;
-                    grid.innerHTML += `
-                        <a href="watch.html?id=${v.docId}" class="v-card">
-                            <div class="thumb-container">
-                                <img src="" id="${tid}" class="thumb">
-                            </div>
-                            <div class="v-title">${v.title}</div>
-                            <div class="v-stats">${(v.views || 0).toLocaleString()}回視聴</div>
-                        </a>
-                    `;
-                    setTimeout(() => {
-                        const img = document.getElementById(tid);
-                        if (v.thumbnail) {
-                            img.src = v.thumbnail;
-                            img.classList.add('loaded');
-                        } else {
-                            generateThumb(v.url, img);
-                        }
-                    }, 100);
-                });
+                renderVideos(videos);
             }
         } catch (error) {
             console.error("Error loading videos:", error);
@@ -341,6 +656,110 @@
             isLoading = false;
             document.getElementById('loadingIndicator').style.display = 'none';
         }
+    }
+
+    async function loadSearchResults() {
+        if (isLoading) return;
+        isLoading = true;
+        document.getElementById('loadingIndicator').style.display = 'block';
+
+        try {
+            const snap = await getDocs(collection(db, "videos"));
+            const allVideos = [];
+            
+            snap.forEach(doc => {
+                const data = doc.data();
+                const titleLower = data.title.toLowerCase();
+                if (titleLower.includes(searchQuery)) {
+                    allVideos.push({ docId: doc.id, ...data });
+                }
+            });
+
+            allVideos.sort(() => Math.random() - 0.5);
+
+            if (allVideos.length === 0) {
+                document.getElementById('grid').innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">検索結果がありません</p>';
+            } else {
+                renderVideos(allVideos.slice(0, BATCH_SIZE));
+            }
+            
+            hasMore = false;
+        } catch (error) {
+            console.error("Error searching videos:", error);
+            hasMore = false;
+        } finally {
+            isLoading = false;
+            document.getElementById('loadingIndicator').style.display = 'none';
+        }
+    }
+
+    function renderVideos(videos) {
+        const grid = document.getElementById('grid');
+        videos.forEach(v => {
+            const tid = `thumb-${v.docId}`;
+            const videoCard = document.createElement('a');
+            videoCard.href = `watch.html?id=${v.docId}`;
+            videoCard.className = 'v-card';
+            videoCard.innerHTML = `
+                <div class="thumb-container">
+                    <img src="" id="${tid}" class="thumb">
+                </div>
+                <div class="v-title">${v.title}</div>
+                <div class="v-stats">${(v.views || 0).toLocaleString()}回視聴</div>
+            `;
+            
+            // 再生リスト追加ボタン
+            const addPlaylistBtn = document.createElement('button');
+            addPlaylistBtn.style.cssText = `
+                position: absolute;
+                bottom: 5px;
+                right: 5px;
+                background: rgba(0, 217, 255, 0.8);
+                border: none;
+                color: #0a0e27;
+                padding: 4px 8px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 11px;
+                font-weight: 600;
+                opacity: 0;
+                transition: opacity 0.2s;
+            `;
+            addPlaylistBtn.innerText = '+追加';
+            addPlaylistBtn.onclick = (e) => {
+                e.preventDefault();
+                const exists = playlist.some(item => item.docId === v.docId);
+                if (exists) {
+                    playlist = playlist.filter(item => item.docId !== v.docId);
+                } else {
+                    playlist.push({ docId: v.docId, title: v.title, views: v.views, checked: false });
+                }
+                localStorage.setItem('gingaPlaylist', JSON.stringify(playlist));
+                updatePlaylistUI();
+                addPlaylistBtn.innerText = exists ? '+追加' : '✓ 追加済み';
+                setTimeout(() => {
+                    addPlaylistBtn.innerText = playlist.some(item => item.docId === v.docId) ? '✓ 追加済み' : '+追加';
+                }, 500);
+            };
+            
+            videoCard.style.position = 'relative';
+            videoCard.appendChild(addPlaylistBtn);
+            
+            videoCard.onmouseenter = () => { addPlaylistBtn.style.opacity = '1'; };
+            videoCard.onmouseleave = () => { addPlaylistBtn.style.opacity = '0'; };
+            
+            grid.appendChild(videoCard);
+            
+            setTimeout(() => {
+                const img = document.getElementById(tid);
+                if (v.thumbnail) {
+                    img.src = v.thumbnail;
+                    img.classList.add('loaded');
+                } else {
+                    generateThumb(v.url, img);
+                }
+            }, 100);
+        });
     }
 
     function generateThumb(url, imgElement) {
