@@ -3,72 +3,404 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>再生 - iroTube</title>
+    <title>再生 - GINGA</title>
     <style>
-        body { font-family: sans-serif; margin: 0; background: #fff; display: flex; flex-direction: column; align-items: center; }
-        header { width: 100%; padding: 10px 20px; border-bottom: 1px solid #eee; box-sizing: border-box; }
-        .logo { font-size: 20px; font-weight: bold; text-decoration: none; color: #007bff; }
-        .container { display: flex; max-width: 1200px; width: 100%; gap: 20px; padding: 20px; box-sizing: border-box; }
-        .main-col { flex: 2; }
-        .side-col { flex: 1; }
-        video { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; }
-        .v-title { font-size: 20px; font-weight: bold; margin: 15px 0; }
-        .action-bar { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .author-info { display: flex; align-items: center; gap: 10px; }
-        .author-icon { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #eee; }
-        .btn { padding: 8px 16px; border-radius: 20px; border: none; cursor: pointer; font-weight: bold; }
-        .btn-like { background: #eee; }
-        .btn-like.active { background: #007bff; color: #fff; }
-        .btn-sub { background: #cc0000; color: #fff; }
-        .btn-sub.active { background: #eee; color: #606060; }
-        .admin-del { background: #ff4d4d; color: #fff; display: none; margin-left: 10px; }
-        .edit-num { cursor: pointer; text-decoration: underline dotted; }
-
-        .comment-section { margin-top: 30px; border-top: 1px solid #eee; pt: 20px; }
-        .comment-input { width: 100%; padding: 10px; border: none; border-bottom: 1px solid #ddd; margin-bottom: 10px; outline: none; }
-        .comment-item { margin-bottom: 20px; font-size: 14px; }
-        .comment-main { display: flex; gap: 10px; }
-        .reply-list { margin-left: 50px; margin-top: 10px; border-left: 2px solid #eee; padding-left: 10px; }
-        .reply-btn { font-size: 12px; color: #606060; cursor: pointer; background: none; border: none; padding: 5px; margin-top: 5px; }
-        .reply-input-area { margin-left: 50px; display: none; margin-top: 5px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        /* [運営]バッジのスタイル */
-        .admin-badge { color: #cc0000; font-weight: bold; margin-left: 4px; }
+        :root {
+            --bg-dark: #0a0e27;
+            --bg-darker: #050810;
+            --bg-card: #1a1f3a;
+            --cyan: #00d9ff;
+            --cyan-light: #4df4ff;
+            --cyan-dark: #0099cc;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --border: #2a3050;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        header {
+            width: 100%;
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(5, 8, 16, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            font-size: 22px;
+            font-weight: 900;
+            text-decoration: none;
+            background: linear-gradient(135deg, var(--cyan) 0%, var(--cyan-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .container {
+            display: flex;
+            max-width: 1400px;
+            width: 100%;
+            gap: 25px;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+        
+        .main-col {
+            flex: 2;
+        }
+        
+        .side-col {
+            flex: 1;
+        }
+        
+        video {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        
+        .v-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 20px 0 12px;
+            color: var(--text-primary);
+        }
+        
+        .stat-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+        
+        .action-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            padding: 15px 0;
+            gap: 15px;
+        }
+        
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .author-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: rgba(0, 217, 255, 0.1);
+            border: 2px solid var(--cyan);
+        }
+        
+        .author-text strong {
+            display: block;
+            color: var(--text-primary);
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+        
+        .author-text small {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--cyan);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .btn:hover {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: var(--cyan);
+        }
+        
+        .btn.active {
+            background: var(--cyan);
+            color: var(--bg-dark);
+            border-color: var(--cyan);
+        }
+        
+        .btn-sub {
+            background: linear-gradient(135deg, var(--cyan) 0%, var(--cyan-light) 100%);
+            color: var(--bg-dark);
+            border: none;
+            padding: 9px 20px;
+        }
+        
+        .btn-sub:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.3);
+        }
+        
+        .btn-sub.active {
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--cyan);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .admin-del {
+            background: rgba(255, 100, 100, 0.15);
+            color: #ff6464;
+            border-color: rgba(255, 100, 100, 0.3);
+            display: none;
+        }
+        
+        .admin-del:hover {
+            background: rgba(255, 100, 100, 0.25);
+        }
+        
+        .edit-num {
+            cursor: pointer;
+            border-bottom: 1px dotted var(--cyan);
+            transition: color 0.2s;
+        }
+        
+        .edit-num:hover {
+            color: var(--cyan-light);
+        }
+
+        .comment-section {
+            margin-top: 40px;
+            border-top: 1px solid var(--border);
+            padding-top: 25px;
+        }
+        
+        #commentHeader {
+            font-size: 18px;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+        
+        .comment-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            background: rgba(0, 217, 255, 0.05);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .comment-input:focus {
+            outline: none;
+            border-color: var(--cyan);
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+        }
+        
+        .comment-item {
+            margin-bottom: 25px;
+            font-size: 14px;
+            background: rgba(26, 31, 58, 0.3);
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+        
+        .comment-main {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .comment-main strong {
+            color: var(--cyan);
+        }
+        
+        .admin-badge {
+            color: #ff9999;
+            font-weight: 700;
+            font-size: 11px;
+            margin-left: 4px;
+        }
+        
+        .reply-btn {
+            font-size: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+            margin-top: 5px;
+            transition: color 0.2s;
+        }
+        
+        .reply-btn:hover {
+            color: var(--cyan);
+        }
+        
+        .reply-list {
+            margin-left: 20px;
+            margin-top: 10px;
+            border-left: 2px solid var(--border);
+            padding-left: 15px;
+        }
+        
+        .reply-list > div {
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .reply-list strong {
+            color: var(--cyan-light);
+        }
+        
+        .reply-input-area {
+            margin-left: 20px;
+            display: none;
+            margin-top: 10px;
+        }
+        
+        .reply-input-area input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            background: rgba(0, 217, 255, 0.05);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+        
+        .reply-input-area input:focus {
+            outline: none;
+            border-color: var(--cyan);
+        }
+        
+        .related-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+        
+        .rec-card {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: transform 0.2s;
+            border-radius: 6px;
+            padding: 8px;
+        }
+        
+        .rec-card:hover {
+            transform: translateX(5px);
+            background: rgba(0, 217, 255, 0.05);
+        }
+        
+        .rec-thumb {
+            width: 120px;
+            height: 67px;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 4px;
+            flex-shrink: 0;
+            object-fit: cover;
+        }
+        
+        .rec-text {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .rec-text h4 {
+            font-size: 13px;
+            margin: 0 0 4px 0;
+            line-height: 1.3;
+            color: var(--text-primary);
+        }
+        
+        .rec-text p {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .main-col, .side-col {
+                flex: 1;
+            }
+        }
     </style>
 </head>
 <body>
 
-<header><a href="index.html" class="logo">iroTube</a></header>
+<header><a href="index.html" class="logo">◆ GINGA</a></header>
 
 <div class="container">
     <div class="main-col">
         <video id="player" controls autoplay></video>
         <div id="vTitle" class="v-title">読み込み中...</div>
-        <div style="font-size:14px; color:#606060; margin-bottom:10px;">
-            再生回数 <span id="viewNum" class="stat-val">0</span>回
+        <div class="stat-row">
+            再生回数 <span id="viewNum" class="edit-num">0</span>回
         </div>
         <div class="action-bar">
             <div class="author-info">
                 <img id="authorIcon" class="author-icon">
-                <div>
-                    <div id="authorName" style="font-weight:bold;">読み込み中...</div>
-                    <div style="font-size:12px; color:#606060;">登録者 <span id="subNum" class="stat-val">0</span>人</div>
+                <div class="author-text">
+                    <strong id="authorName">読み込み中...</strong>
+                    <small>登録者 <span id="subNum" class="edit-num">0</span>人</small>
                 </div>
                 <button class="btn btn-sub" id="subBtn">チャンネル登録</button>
             </div>
             <div class="btn-group">
-                <button class="btn btn-like" id="likeBtn">👍 <span id="likeNum" class="stat-val">0</span></button>
+                <button class="btn" id="likeBtn">👍 <span id="likeNum" class="edit-num">0</span></button>
                 <button id="adminDelBtn" class="btn admin-del">削除</button>
             </div>
         </div>
 
         <div class="comment-section">
             <h3 id="commentHeader">コメント 0件</h3>
-            <input type="text" id="commentInput" class="comment-input" placeholder="コメントを追加...">
+            <input type="text" id="commentInput" class="comment-input" placeholder="💭 コメントを追加...">
             <div id="commentList"></div>
         </div>
     </div>
-    <div class="side-col" id="relatedList"></div>
+    <div class="side-col">
+        <div class="related-title">おすすめ</div>
+        <div id="relatedList"></div>
+    </div>
 </div>
 
 <script type="module">
@@ -94,8 +426,8 @@
 
     onAuthStateChanged(auth, user => {
         currentUser = user;
-        if(user && vid) {
-            if(user.uid === ADMIN_UID) setupAdmin();
+        if (user && vid) {
+            if (user.uid === ADMIN_UID) setupAdmin();
             checkStates();
         }
     });
@@ -108,43 +440,43 @@
         const v = vSnap.data();
         document.getElementById('player').src = v.url;
         document.getElementById('vTitle').innerText = v.title;
-        document.getElementById('viewNum').innerText = v.views || 0;
-        document.getElementById('likeNum').innerText = v.likes || 0;
+        document.getElementById('viewNum').innerText = (v.views || 0).toLocaleString();
+        document.getElementById('likeNum').innerText = (v.likes || 0).toLocaleString();
 
         const uSnap = await getDoc(doc(db, "users", v.userId));
-        if(uSnap.exists()) {
-            document.getElementById('authorName').innerText = uSnap.data().name;
-            document.getElementById('authorIcon').src = uSnap.data().icon || "";
-            document.getElementById('subNum').innerText = uSnap.data().subscribers || 0;
+        if (uSnap.exists()) {
+            const ud = uSnap.data();
+            document.getElementById('authorName').innerText = ud.name;
+            document.getElementById('authorIcon').src = ud.icon || "";
+            document.getElementById('subNum').innerText = (ud.subscribers || 0).toLocaleString();
         }
 
         document.getElementById('likeBtn').onclick = async () => {
-            if(!currentUser) return alert("ログインしてね");
+            if (!currentUser) return alert("ログインしてください");
             const btn = document.getElementById('likeBtn');
             const ref = doc(db, "videos", vid, "likedUsers", currentUser.uid);
             const isLiked = btn.classList.contains('active');
-            await (isLiked ? deleteDoc(ref) : setDoc(ref, {u:1}));
+            await (isLiked ? deleteDoc(ref) : setDoc(ref, { u: 1 }));
             await updateDoc(vRef, { likes: increment(isLiked ? -1 : 1) });
             btn.classList.toggle('active');
             const fresh = await getDoc(vRef);
-            document.getElementById('likeNum').innerText = fresh.data().likes;
+            document.getElementById('likeNum').innerText = (fresh.data().likes || 0).toLocaleString();
         };
 
         document.getElementById('subBtn').onclick = async () => {
-            if(!currentUser) return alert("ログインしてね");
+            if (!currentUser) return alert("ログインしてください");
             const btn = document.getElementById('subBtn');
             const uRef = doc(db, "users", v.userId);
             const ref = doc(uRef, "subscriberList", currentUser.uid);
             const isSub = btn.classList.contains('active');
-            await (isSub ? deleteDoc(ref) : setDoc(ref, {u:1}));
+            await (isSub ? deleteDoc(ref) : setDoc(ref, { u: 1 }));
             await updateDoc(uRef, { subscribers: increment(isSub ? -1 : 1) });
             btn.classList.toggle('active');
-            btn.innerText = isSub ? "チャンネル登録" : "登録済み";
+            btn.innerText = isSub ? "チャンネル登録" : "✓ 登録済み";
             const fresh = await getDoc(uRef);
-            document.getElementById('subNum').innerText = fresh.data().subscribers;
+            document.getElementById('subNum').innerText = (fresh.data().subscribers || 0).toLocaleString();
         };
 
-        // コメント読み込み
         const cCol = collection(db, "videos", vid, "comments");
         onSnapshot(query(cCol, orderBy("createdAt", "desc")), snap => {
             document.getElementById('commentHeader').innerText = `コメント ${snap.size}件`;
@@ -153,7 +485,6 @@
             snap.forEach(d => {
                 const c = d.data();
                 const cid = d.id;
-                // [運営]タグの判定
                 const adminTag = (c.userId === ADMIN_UID) ? '<span class="admin-badge">[運営]</span>' : '';
                 
                 const div = document.createElement('div');
@@ -210,6 +541,27 @@
         };
 
         updateDoc(vRef, { views: increment(1) });
+
+        // おすすめ動画の読み込み
+        const relatedSnap = await getDocs(query(collection(db, "videos"), limit(8)));
+        const relatedList = document.getElementById('relatedList');
+        relatedList.innerHTML = "";
+        relatedSnap.forEach(doc => {
+            if (doc.id !== vid) {
+                const data = doc.data();
+                const a = document.createElement('a');
+                a.href = `watch.html?id=${doc.id}`;
+                a.className = "rec-card";
+                a.innerHTML = `
+                    <img src="${data.thumbnail || ''}" class="rec-thumb">
+                    <div class="rec-text">
+                        <h4>${data.title}</h4>
+                        <p>${(data.views || 0).toLocaleString()}回視聴</p>
+                    </div>
+                `;
+                relatedList.appendChild(a);
+            }
+        });
     }
 
     window.toggleReply = (cid) => {
@@ -219,37 +571,39 @@
 
     async function checkStates() {
         const l = await getDoc(doc(db, "videos", vid, "likedUsers", currentUser.uid));
-        if(l.exists()) document.getElementById('likeBtn').classList.add('active');
+        if (l.exists()) document.getElementById('likeBtn').classList.add('active');
         const v = await getDoc(doc(db, "videos", vid));
         const s = await getDoc(doc(db, "users", v.data().userId, "subscriberList", currentUser.uid));
-        if(s.exists()) {
+        if (s.exists()) {
             document.getElementById('subBtn').classList.add('active');
-            document.getElementById('subBtn').innerText = "登録済み";
+            document.getElementById('subBtn').innerText = "✓ 登録済み";
         }
     }
 
     function setupAdmin() {
         document.getElementById('adminDelBtn').style.display = "inline-block";
-        document.querySelectorAll('.stat-val').forEach(el => {
-            el.classList.add('edit-num');
+        document.querySelectorAll('.edit-num').forEach(el => {
             el.onclick = async (e) => {
                 e.stopPropagation();
-                const val = prompt("数値変更:", el.innerText);
-                if(val !== null) {
+                const val = prompt("数値を変更:", el.innerText.replace(/,/g, ''));
+                if (val !== null && !isNaN(val)) {
                     let ref = doc(db, "videos", vid);
                     let key = el.id === "viewNum" ? "views" : "likes";
-                    if(el.id === "subNum") {
+                    if (el.id === "subNum") {
                         const v = await getDoc(doc(db, "videos", vid));
                         ref = doc(db, "users", v.data().userId);
                         key = "subscribers";
                     }
                     await updateDoc(ref, { [key]: parseInt(val) });
-                    el.innerText = val;
+                    el.innerText = parseInt(val).toLocaleString();
                 }
             };
         });
         document.getElementById('adminDelBtn').onclick = async () => {
-            if(confirm("消す？")) { await deleteDoc(doc(db, "videos", vid)); location.href="index.html"; }
+            if (confirm("この動画を削除してもよろしいですか？")) {
+                await deleteDoc(doc(db, "videos", vid));
+                location.href = "index.html";
+            }
         };
     }
 </script>

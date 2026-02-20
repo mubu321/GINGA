@@ -3,51 +3,330 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iroTube</title>
+    <title>GINGA - 動画配信プラットフォーム</title>
     <style>
-        body { font-family: sans-serif; margin: 0; background: #fff; }
-        header { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; border-bottom: 1px solid #eee; position: sticky; top: 0; background: #fff; z-index: 100; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        .logo { font-size: 20px; font-weight: bold; text-decoration: none; display: flex; align-items: center; }
-        .iro { color: #007bff; }
-        .tube { color: #000; background: #ffcc00; padding: 2px 5px; border-radius: 4px; margin-left: 2px; }
+        :root {
+            --bg-dark: #0a0e27;
+            --bg-darker: #050810;
+            --bg-card: #1a1f3a;
+            --cyan: #00d9ff;
+            --cyan-light: #4df4ff;
+            --cyan-dark: #0099cc;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --border: #2a3050;
+        }
         
-        .header-right { display: flex; align-items: center; gap: 15px; }
-        .u-icon-btn { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; cursor: pointer; background: #eee; border: 1px solid #ddd; }
-        .login-btn { background: #007bff; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; text-decoration: none; }
-
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+        
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            background: rgba(5, 8, 16, 0.8);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 900;
+            text-decoration: none;
+            background: linear-gradient(135deg, var(--cyan) 0%, var(--cyan-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logo::before {
+            content: "◆";
+            font-size: 24px;
+            color: var(--cyan);
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--cyan-light);
+        }
+        
+        .u-icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid var(--cyan);
+            transition: all 0.3s ease;
+        }
+        
+        .u-icon-btn:hover {
+            border-color: var(--cyan-light);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+        
+        .login-btn {
+            background: linear-gradient(135deg, var(--cyan) 0%, var(--cyan-light) 100%);
+            color: var(--bg-dark);
+            border: none;
+            padding: 10px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.4);
+        }
+        
         /* モーダル */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; }
-        .modal-window { background: #fff; padding: 25px; border-radius: 15px; width: 320px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.5); position: relative; }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
         
-        /* ログアウトボタン（端っこに小さく） */
-        .logout-link { position: absolute; top: 15px; right: 15px; font-size: 11px; color: #999; cursor: pointer; text-decoration: underline; background: none; border: none; padding: 0; }
-        .logout-link:hover { color: #ff4d4d; }
-
-        .modal-window h2 { margin: 0 0 15px; font-size: 18px; }
-        .input-box { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        .file-label { display: block; background: #007bff; color: #fff; padding: 10px; border-radius: 5px; cursor: pointer; margin-bottom: 10px; font-size: 14px; }
+        .modal-window {
+            background: var(--bg-card);
+            padding: 40px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        
+        .logout-link {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            text-decoration: underline;
+            background: none;
+            border: none;
+            padding: 0;
+            transition: color 0.3s ease;
+        }
+        
+        .logout-link:hover {
+            color: #ff6b6b;
+        }
+        
+        .modal-window h2 {
+            margin: 0 0 25px;
+            font-size: 22px;
+            color: var(--cyan-light);
+        }
+        
+        .input-box {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+            background: rgba(0, 217, 255, 0.05);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .input-box:focus {
+            outline: none;
+            border-color: var(--cyan);
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+        }
+        
+        .file-label {
+            display: block;
+            background: rgba(0, 217, 255, 0.15);
+            color: var(--cyan);
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        
+        .file-label:hover {
+            background: rgba(0, 217, 255, 0.25);
+            border-color: var(--cyan);
+        }
+        
         #editIcon { display: none; }
-        .warn-text { color: red; font-size: 11px; margin-bottom: 15px; font-weight: bold; line-height: 1.4; }
-        .btn-save { background: #666; color: #fff; border: none; padding: 12px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
-        .btn-close { background: none; border: none; color: #999; cursor: pointer; margin-top: 15px; font-size: 12px; text-decoration: underline; }
-
+        
+        .warn-text {
+            color: #ff9999;
+            font-size: 12px;
+            margin-bottom: 15px;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+        
+        .btn-save {
+            background: linear-gradient(135deg, var(--cyan) 0%, var(--cyan-light) 100%);
+            color: var(--bg-dark);
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.4);
+        }
+        
+        .btn-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 13px;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+        
+        .btn-close:hover {
+            color: var(--text-primary);
+        }
+        
         /* 動画グリッド */
-        .v-grid { display: flex; flex-wrap: wrap; gap: 15px; padding: 20px; }
-        .v-card { width: 220px; text-decoration: none; color: #000; font-size: 14px; }
-        .thumb-container { width: 100%; aspect-ratio: 16/9; background: #eee; border-radius: 8px; overflow: hidden; }
-        .thumb { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.3s; }
-        .v-title { font-weight: bold; margin-top: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .v-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .v-card {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-size: 14px;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .v-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .thumb-container {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .thumb {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .thumb.loaded {
+            opacity: 1;
+        }
+        
+        .v-title {
+            font-weight: 700;
+            margin-top: 12px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 15px;
+        }
+        
+        .v-stats {
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-top: 6px;
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 12px 15px;
+            }
+            
+            .logo {
+                font-size: 20px;
+            }
+            
+            .v-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 12px;
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <a href="index.html" class="logo">
-        <span class="iro">iro</span><span class="tube">Tube</span>
-    </a>
+    <a href="index.html" class="logo">GINGA</a>
     <div class="header-right">
-        <a href="upload.html" style="text-decoration:none; color:#000; font-size:14px;">投稿</a>
+        <a href="upload.html" class="nav-link">+ 投稿</a>
         <div id="userArea"></div>
     </div>
 </header>
@@ -55,12 +334,11 @@
 <div id="profileModal" class="modal-overlay">
     <div class="modal-window">
         <button class="logout-link" id="doLogout">ログアウト</button>
-        
-        <h2>プロフィール変更</h2>
-        <input type="text" id="editName" class="input-box" placeholder="新しい名前">
-        <label for="editIcon" class="file-label">画像を選択</label>
+        <h2>プロフィール編集</h2>
+        <input type="text" id="editName" class="input-box" placeholder="ユーザー名">
+        <label for="editIcon" class="file-label">🖼️ プロフィール画像を選択</label>
         <input type="file" id="editIcon" accept="image/*">
-        <p class="warn-text">※強行突破モード：画像はなるべく小さいものを選んでください</p>
+        <p class="warn-text">※ なるべく小さいサイズの画像をお選びください（1MB以下推奨）</p>
         <button class="btn-save" id="saveProfile">変更を保存</button>
         <button class="btn-close" id="closeModal">キャンセル</button>
     </div>
@@ -94,24 +372,20 @@
         if (user) {
             const uSnap = await getDoc(doc(db, "users", user.uid));
             const ud = uSnap.data();
-            userArea.innerHTML = `<img src="${ud?.icon || ''}" class="u-icon-btn" id="openModalBtn">`;
+            userArea.innerHTML = `<img src="${ud?.icon || ''}" class="u-icon-btn" id="openModalBtn" title="プロフィール">`;
             document.getElementById('openModalBtn').onclick = () => {
                 document.getElementById('editName').value = ud?.name || "";
                 document.getElementById('profileModal').style.display = 'flex';
             };
         } else {
-            userArea.innerHTML = `<button onclick="location.href='login.html'" class="login-btn">ログイン</button>`;
+            userArea.innerHTML = `<a href="login.html" class="login-btn">ログイン</a>`;
         }
     });
 
-    // ログアウト処理
     document.getElementById('doLogout').onclick = () => {
-        if (confirm("本当にログアウトしますか？")) {
-            signOut(auth).then(() => {
-                location.reload();
-            });
+        if (confirm("ログアウトしてもよろしいですか？")) {
+            signOut(auth).then(() => location.reload());
         }
-        // 「いいえ」の場合はそのまま（何もしないでウィンドウを維持）
     };
 
     document.getElementById('closeModal').onclick = () => {
@@ -132,7 +406,7 @@
             reader.onload = async (e) => {
                 updates.icon = e.target.result;
                 await updateDoc(doc(db, "users", currentUser.uid), updates);
-                location.reload(); 
+                location.reload();
             };
             reader.readAsDataURL(fileInput.files[0]);
         } else {
@@ -147,25 +421,45 @@
         snap.forEach(vDoc => {
             const v = vDoc.data();
             const tid = `thumb-${vDoc.id}`;
-            grid.innerHTML += `<a href="watch.html?id=${vDoc.id}" class="v-card"><div class="thumb-container"><img src="" id="${tid}" class="thumb"></div><div class="v-title">${v.title}</div><div style="color:#606060; font-size:12px;">${(v.views || 0).toLocaleString()}回視聴</div></a>`;
+            grid.innerHTML += `
+                <a href="watch.html?id=${vDoc.id}" class="v-card">
+                    <div class="thumb-container">
+                        <img src="" id="${tid}" class="thumb">
+                    </div>
+                    <div class="v-title">${v.title}</div>
+                    <div class="v-stats">${(v.views || 0).toLocaleString()}回視聴</div>
+                </a>
+            `;
             setTimeout(() => {
                 const img = document.getElementById(tid);
-                if (v.thumbnail) { img.src = v.thumbnail; img.style.opacity = 1; } 
-                else { generateThumb(v.url, img); }
+                if (v.thumbnail) {
+                    img.src = v.thumbnail;
+                    img.classList.add('loaded');
+                } else {
+                    generateThumb(v.url, img);
+                }
             }, 100);
         });
     });
 
     function generateThumb(url, imgElement) {
         const v = document.createElement('video');
-        v.src = url; v.preload = "metadata"; v.muted = true; v.crossOrigin = "anonymous"; v.playsInline = true;
+        v.src = url;
+        v.preload = "metadata";
+        v.muted = true;
+        v.crossOrigin = "anonymous";
+        v.playsInline = true;
         v.onloadedmetadata = () => { v.currentTime = 1.0; };
         v.onseeked = () => {
-            const c = document.createElement('canvas'); c.width = 320; c.height = 180;
+            const c = document.createElement('canvas');
+            c.width = 320;
+            c.height = 180;
             c.getContext('2d').drawImage(v, 0, 0, 320, 180);
             imgElement.src = c.toDataURL('image/jpeg', 0.8);
-            imgElement.style.opacity = 1;
-            v.removeAttribute('src'); v.load(); v.remove();
+            imgElement.classList.add('loaded');
+            v.removeAttribute('src');
+            v.load();
+            v.remove();
         };
         v.onerror = () => { v.remove(); };
     }
