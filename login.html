@@ -27,28 +27,29 @@
             min-height: 100vh;
             background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
             color: var(--text-primary);
+            padding: 20px;
         }
         
         .login-box {
             text-align: center;
-            padding: 50px 40px;
+            padding: 40px 30px;
             border: 1px solid var(--border);
             border-radius: 12px;
             background: rgba(26, 31, 58, 0.5);
             backdrop-filter: blur(10px);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            width: 90%;
-            max-width: 400px;
+            width: 100%;
+            max-width: 380px;
         }
         
         .logo {
-            font-size: 48px;
+            font-size: 44px;
             font-weight: 900;
             background: linear-gradient(135deg, var(--cyan) 0%, var(--cyan-light) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             display: block;
             letter-spacing: -2px;
         }
@@ -60,20 +61,20 @@
         
         .subtitle {
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.6;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         
         .login-btn {
             background: linear-gradient(135deg, var(--cyan) 0%, var(--cyan-light) 100%);
             color: var(--bg-dark);
             border: none;
-            padding: 14px 32px;
+            padding: 12px 24px;
             border-radius: 6px;
             font-weight: 700;
             cursor: pointer;
-            font-size: 15px;
+            font-size: 14px;
             transition: all 0.3s ease;
             width: 100%;
         }
@@ -84,10 +85,10 @@
         }
         
         .status {
-            margin-top: 20px;
-            font-size: 13px;
+            margin-top: 18px;
+            font-size: 12px;
             color: var(--text-secondary);
-            min-height: 20px;
+            min-height: 18px;
         }
         
         .status.error {
@@ -96,6 +97,22 @@
         
         .status.success {
             color: var(--cyan);
+        }
+        
+        @media (max-width: 480px) {
+            .login-box {
+                padding: 30px 20px;
+            }
+            
+            .logo {
+                font-size: 36px;
+                margin-bottom: 20px;
+            }
+            
+            .subtitle {
+                font-size: 12px;
+                margin-bottom: 20px;
+            }
         }
     </style>
 </head>
@@ -145,7 +162,7 @@
                 await setDoc(uRef, {
                     name: user.displayName || "ユーザー",
                     icon: user.photoURL || "",
-                    subscribers: 0,
+                    followers: 0,
                     email: user.email
                 });
             }
