@@ -19,11 +19,15 @@
             --border: #2a3050;
         }
         
-        body {
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
             color: var(--text-primary);
-            min-height: 100vh;
+            overflow-x: hidden;
         }
         
         header {
@@ -31,12 +35,13 @@
             align-items: center;
             justify-content: space-between;
             padding: 12px 20px;
-            background: rgba(5, 8, 16, 0.9);
+            background: rgba(5, 8, 16, 0.95);
             border-bottom: 1px solid var(--border);
             backdrop-filter: blur(10px);
             position: sticky;
             top: 0;
             z-index: 100;
+            gap: 15px;
         }
         
         .logo {
@@ -51,6 +56,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            flex-shrink: 0;
         }
         
         .logo::before {
@@ -62,14 +68,13 @@
         .header-right {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             flex: 1;
-            max-width: 400px;
-            margin: 0 20px;
         }
         
         .search-box {
             flex: 1;
+            min-width: 150px;
             display: flex;
             align-items: center;
             background: rgba(0, 217, 255, 0.05);
@@ -122,6 +127,7 @@
             font-weight: 600;
             transition: all 0.3s ease;
             white-space: nowrap;
+            flex-shrink: 0;
         }
         
         .playlist-btn:hover {
@@ -269,37 +275,40 @@
             background: rgba(255, 100, 100, 0.25);
         }
         
-        /* 動画グリッド */
+        /* 動画コンテナ - マスレイアウト */
+        .v-container {
+            width: 100%;
+            height: calc(100vh - 56px);
+            overflow-y: scroll;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            position: relative;
+        }
+        
         .v-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 16px;
-            padding: 20px;
-            max-width: 1600px;
-            margin: 0 auto;
+            grid-template-columns: repeat(auto-fill, minmax(calc(100vw / 5 - 2px), 1fr));
+            gap: 1px;
+            width: 100%;
+            background: var(--border);
+            padding: 0;
         }
         
         .v-card {
+            position: relative;
+            aspect-ratio: 16/9;
+            background: #000;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
             text-decoration: none;
             color: var(--text-primary);
-            font-size: 13px;
-            border-radius: 8px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            cursor: pointer;
         }
         
         .v-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .thumb-container {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: rgba(0, 217, 255, 0.1);
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
+            z-index: 10;
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.5);
         }
         
         .thumb {
@@ -314,29 +323,73 @@
             opacity: 1;
         }
         
+        .v-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0));
+            padding: 20px 10px 10px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+        
+        .v-card:hover .v-info {
+            opacity: 1;
+        }
+        
         .v-title {
             font-weight: 700;
-            margin-top: 10px;
+            font-size: 12px;
+            line-height: 1.3;
+            color: var(--text-primary);
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
-            font-size: 14px;
-            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            margin-bottom: 4px;
         }
         
         .v-stats {
             color: var(--text-secondary);
+            font-size: 10px;
+        }
+        
+        .add-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0, 217, 255, 0.9);
+            border: none;
+            color: #0a0e27;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
             font-size: 11px;
-            margin-top: 5px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 20;
+        }
+        
+        .v-card:hover .add-btn {
+            opacity: 1;
+        }
+        
+        .add-btn:hover {
+            background: rgba(0, 217, 255, 1);
         }
         
         /* ローディング */
         #loadingIndicator {
             text-align: center;
-            padding: 30px 20px;
+            padding: 40px 20px;
             color: var(--text-secondary);
             font-size: 13px;
             display: none;
+            background: rgba(5, 8, 16, 0.5);
         }
         
         .spinner {
@@ -355,61 +408,98 @@
             to { transform: rotate(360deg); }
         }
         
-        @media (max-width: 1024px) {
+        @media (max-width: 1920px) {
             .v-grid {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-                gap: 12px;
-                padding: 15px;
+                grid-template-columns: repeat(auto-fill, minmax(calc(100vw / 5 - 2px), 1fr));
             }
         }
         
-        @media (max-width: 768px) {
+        @media (max-width: 1440px) {
+            .v-grid {
+                grid-template-columns: repeat(auto-fill, minmax(calc(100vw / 4 - 2px), 1fr));
+            }
+        }
+        
+        @media (max-width: 1024px) {
             header {
                 padding: 10px 15px;
-                flex-wrap: wrap;
-                gap: 10px;
             }
             
             .logo {
                 font-size: 20px;
             }
             
-            .header-right {
-                width: 100%;
-                max-width: none;
-                margin: 0;
-                order: 3;
-            }
-            
             .search-box {
-                margin: 0;
+                min-width: 120px;
             }
             
             .v-grid {
-                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-                gap: 10px;
-                padding: 12px;
+                grid-template-columns: repeat(auto-fill, minmax(calc(100vw / 3 - 2px), 1fr));
             }
             
-            .modal-window {
-                max-width: 90%;
+            .v-title {
+                font-size: 11px;
+            }
+            
+            .v-stats {
+                font-size: 9px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 8px 12px;
+                flex-wrap: wrap;
+            }
+            
+            .logo {
+                font-size: 18px;
+                order: 1;
+            }
+            
+            .header-right {
+                width: 100%;
+                order: 3;
+                margin-top: 8px;
+            }
+            
+            .search-box {
+                min-width: auto;
+            }
+            
+            .v-grid {
+                grid-template-columns: repeat(auto-fill, minmax(calc(100vw / 2 - 1px), 1fr));
+            }
+            
+            .v-title {
+                font-size: 10px;
+            }
+            
+            .v-stats {
+                font-size: 8px;
+            }
+            
+            .add-btn {
+                padding: 3px 6px;
+                font-size: 10px;
             }
         }
         
         @media (max-width: 480px) {
             header {
-                padding: 8px 12px;
+                padding: 8px 10px;
             }
             
             .logo {
-                font-size: 18px;
+                font-size: 16px;
             }
             
-            .header-right {
-                gap: 8px;
+            .logo::before {
+                font-size: 14px;
             }
             
             .search-box {
+                min-width: auto;
                 padding: 5px 8px;
             }
             
@@ -418,36 +508,26 @@
             }
             
             .playlist-btn {
-                padding: 5px 10px;
-                font-size: 11px;
+                padding: 5px 8px;
+                font-size: 10px;
             }
             
             .v-grid {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-                padding: 8px;
             }
             
             .v-title {
-                font-size: 12px;
-                margin-top: 8px;
+                font-size: 9px;
+                -webkit-line-clamp: 1;
             }
             
             .v-stats {
-                font-size: 10px;
+                font-size: 7px;
             }
             
-            .modal-window {
-                max-width: 95%;
-                max-height: 70vh;
-            }
-            
-            .modal-header h2 {
-                font-size: 16px;
-            }
-            
-            .modal-content {
-                padding: 15px;
+            .add-btn {
+                padding: 2px 4px;
+                font-size: 9px;
             }
         }
     </style>
@@ -458,10 +538,10 @@
     <a href="index.html" class="logo">GINGA</a>
     <div class="header-right">
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="動画を検索...">
+            <input type="text" id="searchInput" placeholder="検索...">
             <button class="search-btn" id="searchBtn">🔍</button>
         </div>
-        <button class="playlist-btn" id="playlistBtn">📋 再生リスト (<span id="playlistCount">0</span>)</button>
+        <button class="playlist-btn" id="playlistBtn">📋 (<span id="playlistCount">0</span>)</button>
     </div>
 </header>
 
@@ -476,21 +556,23 @@
             <p style="color: var(--text-secondary); text-align: center;">再生リストが空です</p>
         </div>
         <div class="playlist-actions">
-            <button class="playlist-btn-action btn-play" id="playPlaylist">▶ 再生を開始</button>
+            <button class="playlist-btn-action btn-play" id="playPlaylist">▶ 再生</button>
             <button class="playlist-btn-action btn-clear" id="clearPlaylist">🗑 クリア</button>
         </div>
     </div>
 </div>
 
-<div class="v-grid" id="grid"></div>
-<div id="loadingIndicator">
-    <div class="spinner"></div>
-    <span>読み込み中...</span>
+<div class="v-container">
+    <div class="v-grid" id="grid"></div>
+    <div id="loadingIndicator">
+        <div class="spinner"></div>
+        <span>読み込み中...</span>
+    </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, query, orderBy, startAfter, limit, getDocs, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, query, orderBy, startAfter, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAZivYKOGc1tSUAIDq_c10C1wJ-Pdh0U2o",
@@ -509,7 +591,8 @@
     let hasMore = true;
     let isSearching = false;
     let searchQuery = "";
-    const BATCH_SIZE = 12;
+    const BATCH_SIZE = 20;
+    const container = document.querySelector('.v-container');
 
     // 再生リスト管理
     let playlist = JSON.parse(localStorage.getItem('gingaPlaylist')) || [];
@@ -572,7 +655,6 @@
             alert('再生する動画を選択してください');
             return;
         }
-        // 最初の動画を再生
         window.location.href = `watch.html?id=${checkedVideos[0].docId}&playlist=${JSON.stringify(checkedVideos.map(v => v.docId))}`;
     };
 
@@ -603,8 +685,8 @@
     loadMoreVideos();
 
     // 無限スクロール検出
-    window.addEventListener('scroll', () => {
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+    container.addEventListener('scroll', () => {
+        if (container.scrollTop + container.clientHeight >= container.scrollHeight - 1000) {
             if (!isLoading && hasMore) {
                 if (isSearching) {
                     loadSearchResults();
@@ -644,10 +726,10 @@
                 hasMore = false;
             }
 
-            if (videos.length === 0) {
-                hasMore = false;
-            } else {
+            if (videos.length > 0) {
                 renderVideos(videos);
+            } else {
+                hasMore = false;
             }
         } catch (error) {
             console.error("Error loading videos:", error);
@@ -678,7 +760,7 @@
             allVideos.sort(() => Math.random() - 0.5);
 
             if (allVideos.length === 0) {
-                document.getElementById('grid').innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">検索結果がありません</p>';
+                document.getElementById('grid').innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">検索結果がありません</div>';
             } else {
                 renderVideos(allVideos.slice(0, BATCH_SIZE));
             }
@@ -701,52 +783,33 @@
             videoCard.href = `watch.html?id=${v.docId}`;
             videoCard.className = 'v-card';
             videoCard.innerHTML = `
-                <div class="thumb-container">
-                    <img src="" id="${tid}" class="thumb">
+                <img src="" id="${tid}" class="thumb">
+                <div class="v-info">
+                    <div class="v-title">${v.title}</div>
+                    <div class="v-stats">${(v.views || 0).toLocaleString()}回視聴</div>
                 </div>
-                <div class="v-title">${v.title}</div>
-                <div class="v-stats">${(v.views || 0).toLocaleString()}回視聴</div>
+                <button class="add-btn" data-id="${v.docId}">+追加</button>
             `;
             
-            // 再生リスト追加ボタン
-            const addPlaylistBtn = document.createElement('button');
-            addPlaylistBtn.style.cssText = `
-                position: absolute;
-                bottom: 5px;
-                right: 5px;
-                background: rgba(0, 217, 255, 0.8);
-                border: none;
-                color: #0a0e27;
-                padding: 4px 8px;
-                border-radius: 4px;
-                cursor: pointer;
-                font-size: 11px;
-                font-weight: 600;
-                opacity: 0;
-                transition: opacity 0.2s;
-            `;
-            addPlaylistBtn.innerText = '+追加';
-            addPlaylistBtn.onclick = (e) => {
+            const addBtn = videoCard.querySelector('.add-btn');
+            addBtn.onclick = (e) => {
                 e.preventDefault();
                 const exists = playlist.some(item => item.docId === v.docId);
                 if (exists) {
                     playlist = playlist.filter(item => item.docId !== v.docId);
+                    addBtn.textContent = '+追加';
                 } else {
                     playlist.push({ docId: v.docId, title: v.title, views: v.views, checked: false });
+                    addBtn.textContent = '✓ 追加済み';
                 }
                 localStorage.setItem('gingaPlaylist', JSON.stringify(playlist));
                 updatePlaylistUI();
-                addPlaylistBtn.innerText = exists ? '+追加' : '✓ 追加済み';
-                setTimeout(() => {
-                    addPlaylistBtn.innerText = playlist.some(item => item.docId === v.docId) ? '✓ 追加済み' : '+追加';
-                }, 500);
             };
-            
-            videoCard.style.position = 'relative';
-            videoCard.appendChild(addPlaylistBtn);
-            
-            videoCard.onmouseenter = () => { addPlaylistBtn.style.opacity = '1'; };
-            videoCard.onmouseleave = () => { addPlaylistBtn.style.opacity = '0'; };
+
+            const isInPlaylist = playlist.some(item => item.docId === v.docId);
+            if (isInPlaylist) {
+                addBtn.textContent = '✓ 追加済み';
+            }
             
             grid.appendChild(videoCard);
             
